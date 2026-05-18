@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\Course;
+use App\Models\Enrollment;
 use App\Models\Student;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -163,6 +164,45 @@ class CoursePermissionTest extends TestCase
             'email' => 'protected-course@example.com',
             'status' => 'active',
             'course_id' => $course->id,
+        ]);
+
+        $this->actingAs($admin)
+            ->delete(route('courses.destroy', $course))
+            ->assertRedirect(route('courses.index'))
+            ->assertSessionHas('error');
+
+        $this->assertDatabaseHas('courses', [
+            'id' => $course->id,
+        ]);
+    }
+
+    public function test_admin_cannot_delete_courses_with_enrollment_history(): void
+    {
+        $admin = $this->userWithRole('admin');
+        $course = Course::create([
+            'code' => 'IT-104',
+            'name' => 'Data Analytics',
+            'status' => 'active',
+        ]);
+        $currentCourse = Course::create([
+            'code' => 'IT-105',
+            'name' => 'Cloud Computing',
+            'status' => 'active',
+        ]);
+        $student = Student::create([
+            'student_code' => 'STU-2026-0101',
+            'name' => 'Enrollment Student',
+            'email' => 'enrollment-course@example.com',
+            'status' => 'active',
+            'course_id' => $currentCourse->id,
+        ]);
+
+        Enrollment::create([
+            'student_id' => $student->id,
+            'course_id' => $course->id,
+            'enrolled_at' => now()->subMonth()->toDateString(),
+            'completed_at' => now()->toDateString(),
+            'status' => 'completed',
         ]);
 
         $this->actingAs($admin)

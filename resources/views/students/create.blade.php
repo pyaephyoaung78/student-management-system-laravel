@@ -117,6 +117,63 @@
                     >{{ old('address') }}</textarea>
                 </div>
 
+                <div class="border-t pt-6 mt-6">
+                    <h2 class="text-xl font-bold text-gray-800 mb-4">
+                        Guardian Information
+                    </h2>
+
+                    <div class="mb-4">
+                        <label for="guardian_name" class="block text-gray-700 font-bold mb-2">Guardian Name:</label>
+                        <input
+                            type="text"
+                            id="guardian_name"
+                            name="guardian_name"
+                            value="{{ old('guardian_name') }}"
+                            class="w-full border rounded px-4 py-2 focus:outline-none focus:border-blue-500">
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="guardian_relationship" class="block text-gray-700 font-bold mb-2">Relationship:</label>
+                        <input
+                            type="text"
+                            id="guardian_relationship"
+                            name="guardian_relationship"
+                            value="{{ old('guardian_relationship') }}"
+                            class="w-full border rounded px-4 py-2 focus:outline-none focus:border-blue-500"
+                            placeholder="Example: Father, Mother, Uncle">
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="guardian_phone" class="block text-gray-700 font-bold mb-2">Guardian Phone:</label>
+                        <input
+                            type="text"
+                            id="guardian_phone"
+                            name="guardian_phone"
+                            value="{{ old('guardian_phone') }}"
+                            class="w-full border rounded px-4 py-2 focus:outline-none focus:border-blue-500">
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="guardian_email" class="block text-gray-700 font-bold mb-2">Guardian Email:</label>
+                        <input
+                            type="email"
+                            id="guardian_email"
+                            name="guardian_email"
+                            value="{{ old('guardian_email') }}"
+                            class="w-full border rounded px-4 py-2 focus:outline-none focus:border-blue-500">
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="guardian_address" class="block text-gray-700 font-bold mb-2">Guardian Address:</label>
+                        <textarea
+                            id="guardian_address"
+                            name="guardian_address"
+                            rows="3"
+                            class="w-full border rounded px-4 py-2 focus:outline-none focus:border-blue-500"
+                        >{{ old('guardian_address') }}</textarea>
+                    </div>
+                </div>
+
                 <div class="flex gap-2">
                     <button 
                         type="submit" 

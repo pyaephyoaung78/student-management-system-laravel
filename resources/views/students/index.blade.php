@@ -56,6 +56,7 @@
                         <th class="p-4 text-left">Email</th>
                         <th class="p-4 text-left">Phone</th>
                         <th class="p-4 text-left">Course</th>
+                        <th class="p-4 text-left">Guardian</th>
                         <th class="p-4 text-left">Status</th>
                         @if(in_array(auth()->user()->role, ['admin', 'manager']))
                         <th class="p-4 text-left">Actions</th>
@@ -88,6 +89,15 @@
 
                         <td class="p-4">
                             {{ $student->course->name ?? 'No Course Assigned'}}
+                        </td>
+
+                        <td class="p-4">
+                            @if($student->guardian)
+                                <div>{{ $student->guardian->name }}</div>
+                                <div class="text-sm text-gray-500">{{ $student->guardian->phone ?? '-' }}</div>
+                            @else
+                                -
+                            @endif
                         </td>
 
                         <td class="p-4 capitalize">
@@ -124,7 +134,7 @@
                     @empty
 
                     <tr>
-                        <td colspan="{{ in_array(auth()->user()->role, ['admin', 'manager']) ? 7 : 6 }}" class="p-4 text-center text-gray-500">
+                        <td colspan="{{ in_array(auth()->user()->role, ['admin', 'manager']) ? 8 : 7 }}" class="p-4 text-center text-gray-500">
                             No students found.
                         </td>
                     </tr>

@@ -97,6 +97,7 @@ class StudentPermissionTest extends TestCase
     {
         $manager = $this->userWithRole('manager');
         $course = Course::create(['name' => 'Software Engineering']);
+        $newCourse = Course::create(['name' => 'Information Technology']);
 
         $this->actingAs($manager)
             ->post(route('students.store'), [
@@ -108,11 +109,22 @@ class StudentPermissionTest extends TestCase
                 'address' => 'Naypyidaw',
                 'status' => 'active',
                 'course_id' => $course->id,
+                'guardian_name' => 'Daw Guardian',
+                'guardian_relationship' => 'Mother',
+                'guardian_phone' => '09777888999',
+                'guardian_email' => 'guardian@example.com',
+                'guardian_address' => 'Yangon',
             ])
             ->assertSessionHasNoErrors()
             ->assertSessionHas('success');
 
         $student = Student::where('email', 'new-student@example.com')->firstOrFail();
+
+        $this->assertDatabaseHas('enrollments', [
+            'student_id' => $student->id,
+            'course_id' => $course->id,
+            'status' => 'active',
+        ]);
 
         $this->actingAs($manager)
             ->put(route('students.update', $student), [
@@ -123,7 +135,12 @@ class StudentPermissionTest extends TestCase
                 'date_of_birth' => '2006-03-10',
                 'address' => 'Updated Address',
                 'status' => 'graduated',
-                'course_id' => $course->id,
+                'course_id' => $newCourse->id,
+                'guardian_name' => 'U Updated Guardian',
+                'guardian_relationship' => 'Father',
+                'guardian_phone' => '09666555444',
+                'guardian_email' => 'updated-guardian@example.com',
+                'guardian_address' => 'Mandalay',
             ])
             ->assertRedirect(route('students.edit', $student->id));
 
@@ -134,6 +151,35 @@ class StudentPermissionTest extends TestCase
             'email' => 'updated-student@example.com',
             'status' => 'graduated',
         ]);
+
+        $this->assertDatabaseHas('guardians', [
+            'student_id' => $student->id,
+            'name' => 'U Updated Guardian',
+            'relationship' => 'Father',
+            'phone' => '09666555444',
+            'email' => 'updated-guardian@example.com',
+        ]);
+
+        $this->assertDatabaseHas('enrollments', [
+            'student_id' => $student->id,
+            'course_id' => $course->id,
+            'status' => 'completed',
+        ]);
+
+        $this->assertDatabaseHas('enrollments', [
+            'student_id' => $student->id,
+            'course_id' => $newCourse->id,
+            'status' => 'active',
+        ]);
+
+        $response = $this->actingAs($manager)->get(route('students.edit', $student));
+
+        $response->assertOk();
+        $response->assertSee('Enrollment History');
+        $response->assertSee($course->name);
+        $response->assertSee($newCourse->name);
+        $response->assertSee('completed');
+        $response->assertSee('active');
     }
 
     public function test_manager_cannot_delete_students(): void

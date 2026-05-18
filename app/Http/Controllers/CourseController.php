@@ -85,9 +85,9 @@ class CourseController extends Controller
 
     public function destroy(Course $course)
     {
-        if ($course->students()->exists()) {
+        if ($course->students()->exists() || $course->enrollments()->exists()) {
             return redirect()->route('courses.index')
-                ->with('error', 'This course has students assigned. Move those students before deleting it.');
+                ->with('error', 'This course has student or enrollment records. Move or complete those records before deleting it.');
         }
 
         $course->delete();
