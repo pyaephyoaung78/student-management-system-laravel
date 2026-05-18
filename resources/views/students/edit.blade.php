@@ -111,6 +111,63 @@
                     >{{ old('address', $student->address) }}</textarea>
                 </div>
 
+                <div class="border-t pt-6 mt-6">
+                    <h2 class="text-xl font-bold text-gray-800 mb-4">
+                        Guardian Information
+                    </h2>
+
+                    <div class="mb-4">
+                        <label for="guardian_name" class="block text-gray-700 font-bold mb-2">Guardian Name:</label>
+                        <input
+                            type="text"
+                            id="guardian_name"
+                            name="guardian_name"
+                            value="{{ old('guardian_name', optional($student->guardian)->name) }}"
+                            class="w-full border rounded px-4 py-2 focus:outline-none focus:border-blue-500">
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="guardian_relationship" class="block text-gray-700 font-bold mb-2">Relationship:</label>
+                        <input
+                            type="text"
+                            id="guardian_relationship"
+                            name="guardian_relationship"
+                            value="{{ old('guardian_relationship', optional($student->guardian)->relationship) }}"
+                            class="w-full border rounded px-4 py-2 focus:outline-none focus:border-blue-500"
+                            placeholder="Example: Father, Mother, Uncle">
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="guardian_phone" class="block text-gray-700 font-bold mb-2">Guardian Phone:</label>
+                        <input
+                            type="text"
+                            id="guardian_phone"
+                            name="guardian_phone"
+                            value="{{ old('guardian_phone', optional($student->guardian)->phone) }}"
+                            class="w-full border rounded px-4 py-2 focus:outline-none focus:border-blue-500">
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="guardian_email" class="block text-gray-700 font-bold mb-2">Guardian Email:</label>
+                        <input
+                            type="email"
+                            id="guardian_email"
+                            name="guardian_email"
+                            value="{{ old('guardian_email', optional($student->guardian)->email) }}"
+                            class="w-full border rounded px-4 py-2 focus:outline-none focus:border-blue-500">
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="guardian_address" class="block text-gray-700 font-bold mb-2">Guardian Address:</label>
+                        <textarea
+                            id="guardian_address"
+                            name="guardian_address"
+                            rows="3"
+                            class="w-full border rounded px-4 py-2 focus:outline-none focus:border-blue-500"
+                        >{{ old('guardian_address', optional($student->guardian)->address) }}</textarea>
+                    </div>
+                </div>
+
                 <div class="flex gap-2">
                     <button
                         type="submit"
@@ -125,6 +182,57 @@
                     </a>
                 </div>
             </form>
+        </div>
+
+        <div class="bg-white shadow rounded overflow-hidden p-6 mt-6">
+            <h2 class="text-xl font-bold text-gray-800 mb-4">
+                Enrollment History
+            </h2>
+
+            <table class="w-full">
+                <thead class="bg-gray-100">
+                    <tr>
+                        <th class="p-4 text-left">Course</th>
+                        <th class="p-4 text-left">Status</th>
+                        <th class="p-4 text-left">Enrolled At</th>
+                        <th class="p-4 text-left">Completed At</th>
+                        <th class="p-4 text-left">Notes</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @forelse($student->enrollments as $enrollment)
+                    <tr class="border-t">
+                        <td class="p-4">
+                            <div class="font-semibold">{{ $enrollment->course->name ?? 'Course removed' }}</div>
+                            <div class="text-sm text-gray-500">{{ $enrollment->course->code ?? '-' }}</div>
+                        </td>
+
+                        <td class="p-4 capitalize">
+                            {{ $enrollment->status }}
+                        </td>
+
+                        <td class="p-4">
+                            {{ optional($enrollment->enrolled_at)->format('Y-m-d') ?? '-' }}
+                        </td>
+
+                        <td class="p-4">
+                            {{ optional($enrollment->completed_at)->format('Y-m-d') ?? '-' }}
+                        </td>
+
+                        <td class="p-4">
+                            {{ $enrollment->notes ?? '-' }}
+                        </td>
+                    </tr>
+                    @empty
+                    <tr>
+                        <td colspan="5" class="p-4 text-center text-gray-500">
+                            No enrollment history found.
+                        </td>
+                    </tr>
+                    @endforelse
+                </tbody>
+            </table>
         </div>
 
     </div>

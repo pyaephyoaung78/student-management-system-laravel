@@ -15,7 +15,7 @@
         <div class="bg-white shadow rounded-xl p-6">
 
             <h2 class="text-gray-500">
-                Total Students
+                Total Student
             </h2>
 
             <p class="text-4xl font-bold">
@@ -27,7 +27,7 @@
         <div class="bg-white shadow rounded-xl p-6">
 
             <h2 class="text-gray-500">
-                Total Users
+                Total User
             </h2>
 
             <p class="text-4xl font-bold">
@@ -39,7 +39,7 @@
         <div class="bg-white shadow rounded-xl p-6">
 
             <h2 class="text-gray-500">
-                Total Courses
+                Total Course
             </h2>
 
             <p class="text-4xl font-bold">
