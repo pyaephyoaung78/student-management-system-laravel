@@ -38,7 +38,7 @@
 
                 @if(auth()->user()->role === 'admin')
                 <li>
-                    <a href="{{ route('users.index') }}">Manage Users</a>
+                    <a href="{{ route('admin.users.index') }}">Manage Users</a>
                 </li>
                 @endif
 
@@ -48,6 +48,17 @@
 
         {{-- MAIN CONTENT --}}
         <div class="flex-1 p-6 bg-gray-800">
+            <div class="flex items-center gap-3 text-white">
+                <span>{{ auth()->user()->name }}</span>
+
+                <form method="POST" action="{{ route('logout') }}">
+                    @csrf
+                    <button type="submit"
+                        class="bg-blue-500 text-white px-3 py-2 rounded">
+                        Logout
+                    </button>
+                </form>
+            </div>
 
             @if(session('success'))
             <div class="bg-green-100 text-green-700 p-4 rounded mb-4">

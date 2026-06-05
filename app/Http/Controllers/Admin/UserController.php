@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\Rule;
 
 class UserController extends Controller
 {
@@ -19,7 +20,7 @@ class UserController extends Controller
                     ->orWhere('email', 'LIKE', "%{$search}%")
                     ->orWhere('role', 'LIKE', "%{$search}%");
             })
-            ->paginate(3)
+            ->paginate(10)
             ->withQueryString();
 
         return view('admin.users.index', compact('users'));
@@ -36,7 +37,7 @@ class UserController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'email', 'max:255', 'unique:users,email'],
             'password' => ['required', 'string', 'min:8'],
-            'role' => ['required', 'string', 'max:255']
+            'role' => ['required', Rule::in(['admin', 'manager', 'staff'])]
         ]);
 
         User::create([
@@ -59,12 +60,12 @@ class UserController extends Controller
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'email', 'max:255', 'unique:users,email,' . $user->id],
-            'role' => ['required', 'string', 'max:255']
+            'role' => ['required', Rule::in(['admin', 'manager', 'staff'])]
         ]);
 
         $user->update($request->only('name', 'email', 'role'));
 
-        return redirect()->route('users.edit' , $user->id)
+        return redirect()->route('users.edit', $user->id)
             ->with('success', 'User updated successfully');
     }
 

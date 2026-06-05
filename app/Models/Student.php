@@ -7,9 +7,12 @@ use App\Models\Enrollment;
 use App\Models\Guardian;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Student extends Model
 {
+    use SoftDeletes;
+
     protected $fillable = [
         'student_code',
         'name',
