@@ -30,6 +30,8 @@ class StudentController extends Controller
                         $q->where('name', 'LIKE', "%{$search}%");
                     });
             })
+            ->withTrashed()
+            ->latest()
             ->paginate(5)
             ->withQueryString();
 
@@ -47,7 +49,6 @@ class StudentController extends Controller
     {
         // Code to save a new student to the database
         $request->validate([
-            'student_code' => ['required', 'string', 'max:50', 'unique:students,student_code'],
             'name' => ['required', 'string', 'max:255'],
             'email' => 'required|email|max:255|unique:students,email',
             'phone' => ['nullable', 'string', 'max:30'],
@@ -68,6 +69,10 @@ class StudentController extends Controller
         DB::transaction(function () use ($request) {
             $student = Student::create($this->studentData($request));
 
+            $student->update([
+                'student_code' => 'STD-' . now()->format('Ymd') . '-' . str_pad($student->id, 4, '0', STR_PAD_LEFT),
+            ]);
+
             $this->startEnrollment($student, (int) $request->course_id);
 
             if ($this->hasGuardianData($request)) {
@@ -76,6 +81,21 @@ class StudentController extends Controller
         });
 
         return back()->with('success', 'Student created successfully.');
+    }
+
+    public function show($id)
+    {
+        $student = Student::with([
+            'course',
+            'guardian',
+            'guardians',
+            'activeEnrollment.course',
+            'enrollments' => function ($query) {
+                $query->with('course')->latest('enrolled_at')->latest();
+            },
+        ])->findOrFail($id);
+
+        return view('students.show', compact('student'));
     }
 
     public function edit($id)
@@ -93,7 +113,6 @@ class StudentController extends Controller
     public function update(Request $request, $id)
     {
         $request->validate([
-            'student_code' => ['required', 'string', 'max:50', Rule::unique('students', 'student_code')->ignore($id)],
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'email', 'max:255', Rule::unique('students', 'email')->ignore($id),],
             'phone' => ['nullable', 'string', 'max:30'],
@@ -131,18 +150,38 @@ class StudentController extends Controller
             }
         });
 
-        return redirect()->route('students.edit' , $student->id)
+        return redirect()->route('students.edit', $student->id)
             ->with('success', 'Student updated successfully.');
     }
 
     public function destroy($id)
     {
-    
+
         $student = Student::findOrFail($id);
         $student->delete();
 
         return redirect()->route('students.index')
             ->with('success', 'Student deleted successfully.');
+    }
+
+    public function restore($id)
+    {
+        $student = Student::withTrashed()->findOrFail($id);
+
+        $student->restore();
+
+        return redirect()->route('students.index')
+            ->with('success', 'Student restored successfully.');
+    }
+
+    public function forceDelete($id)
+    {
+        $student = Student::withTrashed()->findOrFail($id);
+
+        $student->forceDelete();
+
+        return redirect()->route('students.index')
+            ->with('success', 'Student permanently deleted successfully.');
     }
 
     private function studentData(Request $request): array

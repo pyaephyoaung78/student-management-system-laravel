@@ -4,7 +4,7 @@
 
     <div class="max-w-7xl mx-auto p-6">
 
-        <a class="text-blue-500 hover:text-blue-700" href="/dashboard">← Back to Admin Panel</a>
+        <a class="text-blue-500 hover:text-blue-700" href="{{ route('dashboard') }}">← Back to Admin Panel</a>
 
         <h1 class="text-3xl text-white font-bold mb-6">
             User Management
@@ -14,7 +14,7 @@
         <div class="flex justify-between items-center mb-4">
 
             {{-- Search Form --}}
-            <form action="{{ route('users.index') }}" method="GET">
+            <form action="{{ route('admin.users.index') }}" method="GET">
                 <input
                     type="text"
                     name="search"
@@ -31,7 +31,7 @@
 
             {{-- Add Button --}}
             <a
-                href="{{ route('users.create') }}"
+                href="{{ route('admin.users.create') }}"
                 class="bg-green-500 text-white px-4 py-2 rounded">
                 + Add User
             </a>
@@ -75,13 +75,13 @@
                         <td class="p-4 flex gap-2">
 
                             <a
-                                href="{{ route('users.edit', $user->id) }}"
+                                href="{{ route('admin.users.edit', $user->id) }}"
                                 class="bg-yellow-400 text-white px-3 py-1 rounded">
                                 Edit
                             </a>
                             @if(auth()->user()->role !== 'manager')
                             <form
-                                action="{{ route('users.destroy', $user->id) }}"
+                                action="{{ route('admin.users.destroy', $user->id) }}"
                                 method="POST">
                                 @csrf
                                 @method('DELETE')

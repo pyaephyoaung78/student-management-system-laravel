@@ -4,7 +4,7 @@
 
     <div class="max-w-7xl mx-auto p-6">
 
-        <a class="text-blue-500 hover:text-blue-700" href="{{ route('users.index') }}">← Back to User List</a>
+        <a class="text-blue-500 hover:text-blue-700" href="{{ route('admin.users.index') }}">← Back to User List</a>
 
         <h1 class="text-3xl text-white font-bold mb-6">
             Edit User
@@ -12,7 +12,7 @@
 
         {{-- Edit User Form --}}
         <div class="bg-white shadow rounded overflow-hidden p-6">
-            <form action="{{ route('users.update', $user->id) }}" method="POST">
+            <form action="{{ route('admin.users.update', $user->id) }}" method="POST">
                 @csrf
                 @method('PUT')
 
@@ -59,7 +59,7 @@
                     </button>
 
                     <a
-                        href="{{ route('users.index') }}"
+                        href="{{ route('admin.users.index') }}"
                         class="bg-gray-500 text-white px-6 py-2 rounded hover:bg-gray-600 inline-block text-center">
                         Cancel
                     </a>

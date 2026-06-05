@@ -1,39 +1,20 @@
 <?php
 
-use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\CourseController;
 use App\Http\Controllers\EnrollmentController;
+use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\StudentController;
 use App\Models\Course;
 use App\Models\Student;
-use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Admin\UserController;
 use App\Models\User;
+use Illuminate\Support\Facades\Route;
 
-/*
-|----------------------------------
-| HOME
-|----------------------------------
-*/
 Route::get('/', function () {
-    return redirect('/dashboard');
+    return redirect()->route('dashboard');
 });
-
-/*
-|----------------------------------
-| DASHBOARD (ALL LOGGED USERS)
-|----------------------------------
-*/
-
-Route::middleware(['auth', 'role:admin'])->prefix('admin')->group(function () {
-
-    Route::resource('users', UserController::class)->except(['show']);
-
-});
-
 
 Route::get('/dashboard', function () {
-
     $studentCount = Student::count();
     $userCount = User::count();
     $courseCount = Course::count();
@@ -45,27 +26,43 @@ Route::get('/dashboard', function () {
         'courseCount',
         'recentStudents'
     ));
-
 })->middleware(['auth', 'verified'])->name('dashboard');
 
-/*
-|----------------------------------
-| AUTHENTICATED ROUTES
-|----------------------------------
-*/
 Route::middleware('auth')->group(function () {
 
-    // PROFILE
+    /*
+    |--------------------------------------------------------------------------
+    | Profile
+    |--------------------------------------------------------------------------
+    */
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
-    // STUDENTS (VIEW for all logged users)
+    /*
+    |--------------------------------------------------------------------------
+    | View Routes: admin, manager, staff
+    |--------------------------------------------------------------------------
+    */
     Route::get('/students', [StudentController::class, 'index'])->name('students.index');
+
+    Route::get('/students/create', [StudentController::class, 'create'])
+        ->name('students.create');
+
+    Route::post('/students', [StudentController::class, 'store'])
+        ->name('students.store');
+        
+    Route::get('/students/{student}', [StudentController::class, 'show'])->name('students.show');
+
     Route::get('/courses', [CourseController::class, 'index'])->name('courses.index');
+
     Route::get('/enrollments', [EnrollmentController::class, 'index'])->name('enrollments.index');
 
-    // CREATE + EDIT (admin + manager)
+    /*
+    |--------------------------------------------------------------------------
+    | Create + Edit Routes: admin, manager
+    |--------------------------------------------------------------------------
+    */
     Route::middleware('role:admin,manager')->group(function () {
 
         Route::resource('students', StudentController::class)
@@ -76,29 +73,40 @@ Route::middleware('auth')->group(function () {
 
         Route::get('/enrollments/create', [EnrollmentController::class, 'create'])->name('enrollments.create');
         Route::post('/enrollments', [EnrollmentController::class, 'store'])->name('enrollments.store');
-        Route::patch('/enrollments/{enrollment}/complete', [EnrollmentController::class, 'complete'])->name('enrollments.complete');
-        Route::patch('/enrollments/{enrollment}/withdraw', [EnrollmentController::class, 'withdraw'])->name('enrollments.withdraw');
 
+        Route::patch('/enrollments/{enrollment}/complete', [EnrollmentController::class, 'complete'])
+            ->name('enrollments.complete');
+
+        Route::patch('/enrollments/{enrollment}/withdraw', [EnrollmentController::class, 'withdraw'])
+            ->name('enrollments.withdraw');
     });
 
-    // DELETE (admin only)
+    /*
+    |--------------------------------------------------------------------------
+    | Delete / Cancel Routes: admin only
+    |--------------------------------------------------------------------------
+    */
     Route::middleware('role:admin')->group(function () {
 
         Route::delete('/students/{student}', [StudentController::class, 'destroy'])
             ->name('students.destroy');
 
+        Route::patch('/students/{id}/restore', [StudentController::class, 'restore'])
+            ->name('students.restore');
+
+        Route::delete('/students/{id}/force-delete', [StudentController::class, 'forceDelete'])
+            ->name('students.force-delete');
+
         Route::delete('/courses/{course}', [CourseController::class, 'destroy'])
             ->name('courses.destroy');
 
-        Route::patch('/enrollments/{enrollment}/cancel', [EnrollmentController::class, 'cancel'])->name('enrollments.cancel');
+        Route::patch('/enrollments/{enrollment}/cancel', [EnrollmentController::class, 'cancel'])
+            ->name('enrollments.cancel');
 
+        Route::prefix('admin')->name('admin.')->group(function () {
+            Route::resource('users', UserController::class)->except(['show']);
+        });
     });
-
 });
 
-/*
-|----------------------------------
-| AUTH ROUTES
-|----------------------------------
-*/
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';

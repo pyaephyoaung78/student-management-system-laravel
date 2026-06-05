@@ -4,7 +4,7 @@
 
     <div class="max-w-7xl mx-auto p-6">
 
-        <a class="text-blue-500 hover:text-blue-700" href="/dashboard">← Back to Admin Panel</a>
+        <a class="text-blue-500 hover:text-blue-700" href="{{ route('admin.users.index') }}">← Back</a>
 
         <h1 class="text-3xl text-white font-bold mb-6">
             Add New User
@@ -12,7 +12,7 @@
 
         {{-- Add Student Form --}}
         <div class="bg-white shadow rounded overflow-hidden p-6">
-            <form action="{{ route('users.store') }}" method="POST">
+            <form action="{{ route('admin.users.store') }}" method="POST">
                 @csrf
 
                 <div class="mb-4">

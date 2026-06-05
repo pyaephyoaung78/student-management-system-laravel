@@ -16,19 +16,6 @@
                 @csrf
 
                 <div class="mb-4">
-                    <label for="student_code" class="block text-gray-700 font-bold mb-2">Student Code:</label>
-                    <input
-                        type="text"
-                        id="student_code"
-                        name="student_code"
-                        value="{{ old('student_code') }}"
-                        class="w-full border rounded px-4 py-2 focus:outline-none focus:border-blue-500"
-                        placeholder="Example: STU-2026-0001"
-                        required
-                    >
-                </div>
-
-                <div class="mb-4">
                     <label for="name" class="block text-gray-700 font-bold mb-2">Name:</label>
                     <input 
                         type="text" 
